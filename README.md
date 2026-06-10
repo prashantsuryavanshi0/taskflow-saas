@@ -160,9 +160,9 @@ docker compose up --build
 3. Set it as `DATABASE_URL` on Railway.
 4. Run `flask --app app db upgrade` from Railway shell or a one-off job.
 
-### Railway Backend
+### Render Backend
 
-1. Create a Railway service from the `backend` directory.
+1. Create a Render web service from the `backend` directory.
 2. Add every variable from `backend/.env.example`.
 3. Set start command:
 
@@ -176,7 +176,7 @@ gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 3
 
 1. Import the repo and set root directory to `frontend`.
 2. Add every variable from `frontend/.env.example`.
-3. Set `NEXT_PUBLIC_API_URL` to the Railway backend URL.
+3. Set NEXT_PUBLIC_API_URL to the Render backend URL.
 4. Deploy.
 
 ## Feature Notes
