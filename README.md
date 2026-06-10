@@ -110,7 +110,7 @@ Backend variables:
 
 Frontend variables:
 
-- `NEXT_PUBLIC_API_URL`: Railway backend URL or `http://localhost:5000`
+- `NEXT_PUBLIC_API_URL`: Render backend URL or `http://localhost:5000`
 - `NEXT_PUBLIC_GOOGLE_CLIENT_ID`: same Google OAuth web client ID
 
 ## Local Development
@@ -157,8 +157,8 @@ docker compose up --build
 
 1. Create a Supabase project.
 2. Copy the pooled or direct PostgreSQL connection URL.
-3. Set it as `DATABASE_URL` on Railway.
-4. Run `flask --app app db upgrade` from Railway shell or a one-off job.
+3. Set it as `DATABASE_URL` on Render.
+4. Run `flask --app app db upgrade` from Render shell or a one-off job.
 
 ### Render Backend
 
