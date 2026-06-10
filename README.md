@@ -8,7 +8,7 @@ Production-ready task management SaaS built with Next.js 15, Flask, Supabase Pos
 flowchart LR
   U["User Browser"] --> V["Vercel: Next.js 15 App Router"]
   V --> G["Google Identity Services"]
-  V --> R["Railway: Flask API"]
+  V --> R["Render: Flask API"]
   R --> J["JWT Protected Routes"]
   R --> S["Supabase PostgreSQL"]
   R --> M["Gmail SMTP"]
