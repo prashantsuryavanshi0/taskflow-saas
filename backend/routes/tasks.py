@@ -75,7 +75,7 @@ def create_task(current_user):
     )
     db.session.add(task)
     db.session.commit()
-    #gmail_service.task_assigned(task)
+    gmail_service.task_assigned(task)
     return jsonify(task.to_dict()), 201
 
 
@@ -106,10 +106,10 @@ def update_task(_current_user, task_id):
 
     db.session.commit()
     if task.assigned_to and task.assigned_to != old_assignee:
-      pass
+      gmail_service.task_assigned(task)
 
     if task.status == TaskStatus.completed and old_status != TaskStatus.completed:
-      pass
+      gmail_service.task_completed(task)
     return jsonify(task.to_dict())
 
 
@@ -139,5 +139,5 @@ def update_status(_current_user, task_id):
     task.status = TaskStatus(data["status"])
     db.session.commit()
     if task.status == TaskStatus.completed and old_status != TaskStatus.completed:
-        pass
+        gmail_service.task_completed(task)
     return jsonify(task.to_dict())
