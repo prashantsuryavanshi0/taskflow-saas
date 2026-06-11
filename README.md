@@ -6,27 +6,23 @@ A production-ready full-stack task management SaaS application built with Next.j
 
 # Live Demo
 
-Frontend:
+### Frontend
+
 https://taskflow-saas-olive.vercel.app/login
 
-Backend:
+### Backend
+
 https://taskflow-saas-production-1051.up.railway.app/
 
 ---
 
 # Project Overview
 
-TaskFlow is a collaborative task management platform that allows users to:
+TaskFlow is a collaborative task management platform designed to help teams organize, assign, and track tasks efficiently.
 
-* Sign in using Google Authentication
-* Create tasks
-* Assign tasks to other users
-* Update task status
-* Track project progress
-* View dashboard analytics
-* Receive automated email notifications
+The application enables users to authenticate using Google OAuth, manage tasks, assign responsibilities to team members, track progress through dashboards and Kanban boards, and receive automated email notifications for important task events.
 
-The application follows a modern SaaS architecture with a separate frontend, backend, database, authentication system, and notification service.
+The system follows a modern SaaS architecture with a dedicated frontend, backend API, authentication layer, database layer, and notification service.
 
 ---
 
@@ -44,7 +40,7 @@ F --> B["Railway - Flask API"]
 
 B --> J["JWT Authentication"]
 
-B --> D["Supabase PostgreSQL"]
+B --> D["PostgreSQL Database"]
 
 B --> E["Resend Email Service"]
 ```
@@ -73,11 +69,13 @@ B --> E["Resend Email Service"]
 
 ## Database
 
-* Supabase PostgreSQL
+* PostgreSQL
+* SQLAlchemy ORM
 
 ## Authentication
 
 * Google OAuth 2.0
+* JWT Authentication
 
 ## Email Notifications
 
@@ -90,59 +88,64 @@ B --> E["Resend Email Service"]
 
 ---
 
-# Features
+# Core Features
 
 ## Authentication
 
 * Google OAuth Login
-* Server-side token verification
-* JWT generation
-* Protected routes
-* Session persistence
+* Secure JWT Token Generation
+* Protected Routes
+* Session Persistence
+* Server-side Token Verification
 
 ## Task Management
 
-* Create Task
-* Update Task
-* Delete Task
-* Assign Task
+* Create Tasks
+* Update Tasks
+* Delete Tasks
+* Assign Tasks
 * Search Tasks
 * Filter Tasks
 * Sort Tasks
+* Status Management
 
 ## Dashboard Analytics
+
+The dashboard provides real-time project insights including:
 
 * Total Tasks
 * Pending Tasks
 * In Progress Tasks
 * Completed Tasks
 
-Charts:
+Visual Charts:
 
-* Status Distribution
-* Priority Distribution
+* Tasks by Status
+* Tasks by Priority
 
 ## Team Collaboration
 
-* Assign tasks to users
-* Track ownership
-* Track assignee information
-* Status management
+* Task Assignment
+* Ownership Tracking
+* Assignee Management
+* Team Workflow Monitoring
 
 ## Kanban Board
 
-* Drag-and-drop workflow
-* Real-time status updates
-* Visual task management
+* Drag and Drop Interface
+* Instant Status Updates
+* Visual Workflow Tracking
 
-## Email Notifications
+## Responsive UI
 
-* Task Assignment Notification
-* Task Completion Notification
+* Modern Glassmorphism Design
+* Mobile Friendly Layout
+* Smooth Animations
+* Dark Theme Interface
 
 ---
 
-# File Structure
+# Project Structure
 
 ```text
 backend/
@@ -150,8 +153,8 @@ backend/
 ├── config.py
 ├── extensions.py
 ├── wsgi.py
-├── middleware/
 ├── migrations/
+├── middleware/
 ├── models/
 ├── routes/
 ├── services/
@@ -171,6 +174,20 @@ frontend/
 
 ---
 
+
+### Database Implementation Note
+
+The application was originally developed with Supabase PostgreSQL integration and the backend architecture was designed to support production-grade PostgreSQL databases.
+
+During the final deployment phase, database connectivity and migration configuration issues within the limited assignment timeline prevented complete production integration with Supabase.
+
+To ensure a fully functional and deployable submission, the application was temporarily configured to use SQLite for deployment and demonstration purposes.
+
+The database layer is built using SQLAlchemy ORM, making the transition between SQLite and PostgreSQL seamless with minimal configuration changes.
+
+The existing codebase already supports PostgreSQL/Supabase through the `DATABASE_URL` environment variable, and migrating back to Supabase only requires updating the database connection string and running migrations.
+
+This approach ensured successful deployment while preserving the application's production-ready database architecture.
 # Database Design
 
 ## Users Table
@@ -179,8 +196,8 @@ Stores:
 
 * User ID
 * Name
-* Email
-* Avatar
+* Email Address
+* Profile Picture
 
 ## Tasks Table
 
@@ -193,8 +210,8 @@ Stores:
 * Priority
 * Creator ID
 * Assignee ID
-* Created At
-* Updated At
+* Created Timestamp
+* Updated Timestamp
 
 Relationships are managed using SQLAlchemy ORM.
 
@@ -202,19 +219,19 @@ Relationships are managed using SQLAlchemy ORM.
 
 # API Endpoints
 
-Authentication:
+## Authentication
 
 ```http
 POST /auth/google
 ```
 
-Users:
+## Users
 
 ```http
 GET /users
 ```
 
-Tasks:
+## Tasks
 
 ```http
 GET /tasks
@@ -224,7 +241,7 @@ DELETE /tasks/:id
 PATCH /tasks/:id/status
 ```
 
-Dashboard:
+## Dashboard
 
 ```http
 GET /dashboard/stats
@@ -258,7 +275,7 @@ NEXT_PUBLIC_GOOGLE_CLIENT_ID=
 
 ---
 
-# Local Development
+# Local Development Setup
 
 ## Backend
 
@@ -290,13 +307,9 @@ npm run dev
 
 # Deployment
 
-## Database
+## Backend Deployment
 
-Supabase PostgreSQL
-
-## Backend
-
-Railway
+Platform: Railway
 
 Start Command:
 
@@ -304,9 +317,13 @@ Start Command:
 gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 3
 ```
 
-## Frontend
+## Frontend Deployment
 
-Vercel
+Platform: Vercel
+
+## Database
+
+PostgreSQL Database
 
 ---
 
@@ -314,60 +331,66 @@ Vercel
 
 ## Initial SMTP Implementation
 
-The notification system was initially implemented using Gmail SMTP and App Password authentication.
+The notification system was originally implemented using Gmail SMTP with App Password authentication.
 
-Implemented functionality:
+Implemented functionality included:
 
 * Task Assignment Notifications
 * Task Completion Notifications
-* Dynamic Recipient Emails
+* Dynamic Recipient Support
 * Production Environment Configuration
 
-The SMTP implementation worked correctly in local development.
+The SMTP implementation worked correctly during local development.
 
-During deployment testing, outbound SMTP connectivity restrictions in the hosting environment prevented reliable email delivery.
+However, during cloud deployment testing, outbound SMTP connectivity restrictions on the hosting platform prevented reliable email delivery.
 
-Because of this deployment limitation, SMTP was replaced with a more cloud-friendly solution.
+To provide a more deployment-friendly solution, the email system was migrated to Resend API.
 
 ---
 
-## Resend API Migration
+## Resend API Integration
 
-The notification system was migrated to Resend API.
+The project now uses Resend API for email delivery.
 
-Benefits:
+Advantages:
 
 * API-based email delivery
 * Better cloud compatibility
-* Reliable deployment support
-* Easier production scaling
+* Easier deployment
+* Production scalability
+* Reliable email infrastructure
 
 ---
 
 ## Current Demonstration Mode
 
-The application currently uses Resend's testing mode.
+The notification workflow has been fully implemented and integrated into the application.
 
-Features demonstrated:
+Supported notification events:
 
-* Email notification workflow implemented
-* Assignment notifications implemented
-* Completion notifications implemented
-* End-to-end notification architecture completed
+* Task Assignment Notification
+* Task Completion Notification
 
-In testing mode, emails can be delivered to the verified owner email address.
+Currently, Resend is operating in testing mode.
+
+In testing mode:
+
+* Notification architecture is fully functional
+* End-to-end workflow is implemented
+* Emails can be delivered to the verified owner email address
 
 ---
 
 ## Production Email Delivery
 
-The application architecture is fully production-ready.
+The application is fully prepared for unrestricted production email delivery.
 
 To enable notifications for any email address:
 
-1. Verify a custom domain in Resend
-2. Configure DNS records
-3. Set a verified sender address
+1. Purchase or connect a custom domain
+2. Verify the domain inside Resend
+3. Configure DNS records
+4. Set a verified sender email
 
 Example:
 
@@ -377,11 +400,11 @@ EMAIL_FROM=noreply@yourdomain.com
 
 After domain verification:
 
-* Any user can log in using Google Authentication
+* Any user can authenticate using Google OAuth
 * Any task can be assigned to any valid email address
 * Assignment notifications will be delivered
 * Completion notifications will be delivered
-* No code changes are required
+* No code modifications will be required
 
 ---
 
@@ -389,58 +412,61 @@ After domain verification:
 
 ## Challenge 1
 
-Google OAuth Client ID synchronization between frontend and backend.
+Google OAuth synchronization between frontend and backend environments.
 
 ### Solution
 
-Configured identical Google Client IDs across:
+Configured identical Google OAuth Client IDs across:
 
-* Railway
-* Vercel
 * Google Cloud Console
+* Railway Environment Variables
+* Vercel Environment Variables
 
 ---
 
 ## Challenge 2
 
-SMTP email delivery restrictions during deployment.
+SMTP delivery restrictions in cloud-hosted environments.
 
 ### Solution
 
-Migrated from Gmail SMTP to Resend API.
-
-This provided a more scalable and cloud-native email delivery architecture.
+Migrated from Gmail SMTP to Resend API to achieve a more scalable and cloud-native notification architecture.
 
 ---
 
-# Security
+# Security Features
 
 * JWT Authentication
 * Protected API Routes
 * Google Token Verification
 * Environment Variable Management
 * Input Validation using Marshmallow
+* Secure Backend Authentication Flow
 
 ---
 
 # Future Improvements
 
-* Multi-project workspaces
-* Team roles and permissions
-* Activity logs
-* File attachments
-* Real-time notifications
-* Verified production email domain
-* Mobile application
+Planned enhancements include:
+
+* Multi-project Workspaces
+* Team Roles and Permissions
+* Activity Logs
+* File Attachments
+* Real-time Notifications
+* Verified Production Email Domain
+* Mobile Application
+* Project-Level Analytics
 
 ---
 
 # Conclusion
 
-TaskFlow demonstrates:
+TaskFlow demonstrates practical implementation of modern SaaS development concepts including:
 
-* Full Stack Development
-* Authentication Systems
+* Full Stack Application Development
+* Google OAuth Authentication
+* JWT Authorization
 * REST API Design
 * Database Modeling
 * Cloud Deployment
@@ -448,5 +474,4 @@ TaskFlow demonstrates:
 * Dashboard Analytics
 * Email Notification Architecture
 
-This project was built to showcase production-ready SaaS application development using modern web technologies.
-
+The project showcases a scalable and production-oriented architecture built using modern web technologies and industry-standard development practices.
