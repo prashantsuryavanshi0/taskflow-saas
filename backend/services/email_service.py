@@ -6,8 +6,10 @@ from flask import current_app
 
 class GmailService:
     def send_email(self, to_email: str, subject: str, body: str) -> None:
-        username = current_app.config["SMTP_USERNAME"]
-        password = current_app.config["SMTP_PASSWORD"]
+        username = current_app.config.get("SMTP_USERNAME")
+        password = current_app.config.get("SMTP_PASSWORD")
+        host = current_app.config.get("SMTP_HOST", "smtp.gmail.com")
+        port = int(current_app.config.get("SMTP_PORT", 587))
 
         if not username or not password:
             current_app.logger.warning(
@@ -17,23 +19,31 @@ class GmailService:
             return
 
         try:
+            current_app.logger.info(
+                f"Connecting to SMTP server {host}:{port}"
+            )
+
             message = EmailMessage()
-            message["From"] = current_app.config["SMTP_FROM"]
+            message["From"] = current_app.config.get("SMTP_FROM", username)
             message["To"] = to_email
             message["Subject"] = subject
             message.set_content(body)
 
-            with smtplib.SMTP_SSL(
-                current_app.config["SMTP_HOST"],
-                465,
-                timeout=10,
-            ) as smtp:
+            with smtplib.SMTP(host, port, timeout=20) as smtp:
+                smtp.ehlo()
+                smtp.starttls()
+                smtp.ehlo()
+
+                current_app.logger.info("SMTP TLS started")
+
                 smtp.login(username, password)
+
+                current_app.logger.info("SMTP login successful")
+
                 smtp.send_message(message)
 
             current_app.logger.info(
-                "Email sent successfully to %s",
-                to_email,
+                f"Email sent successfully to {to_email}"
             )
 
         except Exception as e:
@@ -46,19 +56,33 @@ class GmailService:
             self.send_email(
                 task.assignee.email,
                 "New Task Assigned",
-                f"You have been assigned: {task.title}\n\n"
-                f"Priority: {task.priority.value}\n"
-                f"Status: {task.status.value}",
+                f"""You have been assigned a new task.
+
+Title: {task.title}
+Priority: {task.priority.value}
+Status: {task.status.value}
+
+Please check TaskFlow for details.
+""",
             )
 
     def task_completed(self, task) -> None:
         if task.creator:
-            assignee = task.assignee.name if task.assignee else "A teammate"
+            assignee = (
+                task.assignee.name
+                if task.assignee
+                else "A teammate"
+            )
 
             self.send_email(
                 task.creator.email,
                 "Task Completed",
-                f"{assignee} completed the task: {task.title}",
+                f"""{assignee} completed the task:
+
+{task.title}
+
+Please check TaskFlow for updates.
+""",
             )
 
 
