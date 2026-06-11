@@ -23,12 +23,11 @@ class GmailService:
             message["Subject"] = subject
             message.set_content(body)
 
-            with smtplib.SMTP(
+            with smtplib.SMTP_SSL(
                 current_app.config["SMTP_HOST"],
-                current_app.config["SMTP_PORT"],
+                465,
                 timeout=10,
             ) as smtp:
-                smtp.starttls()
                 smtp.login(username, password)
                 smtp.send_message(message)
 
